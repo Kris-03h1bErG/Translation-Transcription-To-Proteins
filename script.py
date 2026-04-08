@@ -23,8 +23,8 @@ protein_synthisis = {
         {
             "U" : "Tyr",
             "C" : "Tyr",
-            "A" : "Stop",
-            "G" : "Stop"
+            "A" : "Stp",
+            "G" : "Stp"
         },  
         "CA" : 
         {
@@ -51,7 +51,7 @@ protein_synthisis = {
         {
             "U" : "Cys",
             "C" : "Cys",
-            "A" : "Stop",
+            "A" : "Stp",
             "G" : "Trp"
         },  
         "AG" : 
@@ -74,8 +74,7 @@ protein_synthisis = {
 def getDnaStrand():
     return input("Please enter DNA with spaces seperating each Codon: ")
 
-def getDnaAndConvertToRNA():
-    dna_strand = getDnaStrand()
+def convertDNAToRNA(dna_strand):
     codon_strand = dna_strand.split(" ")
     #print(codon_strand)
     pair_for_nucleotide = {"T" : "A", "A" : "U", "U" : "C", "C" : "G", "G" : "C"}
@@ -89,7 +88,7 @@ def getDnaAndConvertToRNA():
         new_Codon_Strand.append(new_Codon)
     #print(new_Codon_Strand)
     return new_Codon_Strand
-#getDnaAndConvertToRNA()
+#convertDNAToRNA()
 def convertRNAToProteinStrand(rna_Codon_strand):
     polypeptide_strand = []
     for codon in rna_Codon_strand:
@@ -112,4 +111,49 @@ def convertRNAToProteinStrand(rna_Codon_strand):
             
         
     return polypeptide_strand
-print(convertRNAToProteinStrand(getDnaAndConvertToRNA()))
+
+def getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand):
+    mutated_dna_strand = input("Please enter DNA with spaces seperating each Codon: ")
+    mutated_dna_strand = mutated_dna_strand.upper()
+    mutated_rna_strand = convertDNAToRNA(dna_strand)
+    mutated_polypeptide_strand = convertRNAToProteinStrand(rna_strand)
+    if dna_strand == mutated_dna_strand:
+        print("DNA strands are the same! ")
+        exit 
+    elif dna_strand == '' or mutated_dna_strand == '':
+        print("Either DNA strand or Mutated DNA is not entered!")
+        exit
+    else:
+        codon_changed = 0
+        for current_codon in range(0 , len(rna_strand)):
+            #print(current_codon)
+            if rna_strand[current_codon] == mutated_rna_strand[current_codon]:
+                codon_changed += 1
+            else:
+                print(codon_changed)
+#print(convertRNAToProteinStrandToPrint(convertDNAToRNA()))
+def getDNAToCovertToProteinStrand():
+    dna_strand = getDnaStrand()
+    dna_strand = dna_strand.upper()
+    rna_strand = convertDNAToRNA(dna_strand)
+    polypeptide_strand = convertRNAToProteinStrand(rna_strand)
+
+    printable_rna_strand = ""
+    for rna_codon in rna_strand:
+        printable_rna_strand += " "
+        for nucleotide in rna_codon:
+            printable_rna_strand += nucleotide        
+    
+    printable_polypeptide_strand = ""
+    for peptide in polypeptide_strand:
+        printable_polypeptide_strand += peptide + " "
+    print(f" DNA Strand:      {dna_strand}")
+    print(f" RNA Strand:     {str(printable_rna_strand)}")
+    print(f" Protein Strand:  {str(printable_polypeptide_strand)}")
+    choice = input("Check Strand against its mutated version? Y/N: ")
+    if "Y" in choice.upper():
+        getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand)
+        #mutated_dna_strand, mutated_rna_strand, mutated_peptide_strand = getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand)
+    
+#need to add another part where it checks if each codon is the same with mutated strand and if it changes the resulting protein 
+getDNAToCovertToProteinStrand()
