@@ -1,5 +1,6 @@
 # to convert DNA to Protein Strains 
 # Note to self try to optimize code as much as possible 
+import math
 
 protein_synthisis = {
     "CU" : "Leu",
@@ -115,8 +116,8 @@ def convertRNAToProteinStrand(rna_Codon_strand):
 def getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand):
     mutated_dna_strand = input("Please enter DNA with spaces seperating each Codon: ")
     mutated_dna_strand = mutated_dna_strand.upper()
-    mutated_rna_strand = convertDNAToRNA(dna_strand)
-    mutated_polypeptide_strand = convertRNAToProteinStrand(rna_strand)
+    mutated_rna_strand = convertDNAToRNA(mutated_dna_strand)
+    mutated_polypeptide_strand = convertRNAToProteinStrand(mutated_rna_strand)
     if dna_strand == mutated_dna_strand:
         print("DNA strands are the same! ")
         exit 
@@ -124,14 +125,21 @@ def getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand):
         print("Either DNA strand or Mutated DNA is not entered!")
         exit
     else:
-        codon_changed = 0
+        codon_changed_list = []
+        codon_changed = 1
         for current_codon in range(0 , len(rna_strand)):
-            #print(current_codon)
-            if rna_strand[current_codon] == mutated_rna_strand[current_codon]:
-                codon_changed += 1
+            if rna_strand[current_codon] != mutated_rna_strand[current_codon]:
+                codon_changed_list.append(codon_changed)
+                codon_changed += 1 
+                if polypeptide_strand == mutated_polypeptide_strand:
+                    hidden_mutation = True
+                else:
+                    hidden_mutation = False
             else:
-                print(codon_changed)
-#print(convertRNAToProteinStrandToPrint(convertDNAToRNA()))
+                codon_changed += 1
+    return mutated_dna_strand , mutated_rna_strand , mutated_polypeptide_strand , codon_changed_list , hidden_mutation
+
+                
 def getDNAToCovertToProteinStrand():
     dna_strand = getDnaStrand()
     dna_strand = dna_strand.upper()
@@ -147,13 +155,38 @@ def getDNAToCovertToProteinStrand():
     printable_polypeptide_strand = ""
     for peptide in polypeptide_strand:
         printable_polypeptide_strand += peptide + " "
-    print(f" DNA Strand:      {dna_strand}")
-    print(f" RNA Strand:     {str(printable_rna_strand)}")
-    print(f" Protein Strand:  {str(printable_polypeptide_strand)}")
+    
     choice = input("Check Strand against its mutated version? Y/N: ")
     if "Y" in choice.upper():
-        getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand)
-        #mutated_dna_strand, mutated_rna_strand, mutated_peptide_strand = getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand)
-    
+        mutated_dna_strand , mutated_rna_strand , mutated_polypeptide_strand , changed_list , hidden_mutation = getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand)
+        printable_mutated_rna_strand = ""
+        for rna_codon in mutated_rna_strand:
+            printable_mutated_rna_strand += " "
+            for nucleotide in rna_codon:
+                printable_mutated_rna_strand += nucleotide   
+
+        printable_mutated_polypeptide_strand = ""
+        for peptide in mutated_polypeptide_strand:
+            printable_mutated_polypeptide_strand += peptide + " "     
+    print(f" DNA Strand:      {dna_strand}")
+    print(f" RNA Strand:     {str(printable_rna_strand)}")
+    print(f" Protein Strand:  {str(printable_polypeptide_strand)}\n")
+    #start = 1
+    change = "" 
+    for start in range(1 , len(polypeptide_strand) + 1):
+        # distance = abs(start - changes)
+        # change += "    " * distance 
+        if start in changed_list:
+            change += "^^^ "
+        else:
+            change += "    "
+        start += 1
+
+    print(f" DNA Strand:      {mutated_dna_strand}")
+    print(f"                  {change}")
+    print(f" RNA Strand:     {str(printable_mutated_rna_strand)}")
+    print(f"                  {change}")
+    print(f" Protein Strand:  {str(printable_mutated_polypeptide_strand)}")
+    print(f"                  {change}")
 #need to add another part where it checks if each codon is the same with mutated strand and if it changes the resulting protein 
 getDNAToCovertToProteinStrand()
