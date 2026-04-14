@@ -114,6 +114,8 @@ def convertRNAToProteinStrand(rna_Codon_strand):
     return polypeptide_strand
 
 def getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand):
+    hidden_mutation = False
+    codon_changed_list = []
     mutated_dna_strand = input("Please enter DNA with spaces seperating each Codon: ")
     mutated_dna_strand = mutated_dna_strand.upper()
     mutated_rna_strand = convertDNAToRNA(mutated_dna_strand)
@@ -125,12 +127,14 @@ def getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand):
         print("Either DNA strand or Mutated DNA is not entered!")
         exit
     else:
-        codon_changed_list = []
         codon_changed = 1
         for current_codon in range(0 , len(rna_strand)):
-            if rna_strand[current_codon] != mutated_rna_strand[current_codon]:
-                codon_changed_list.append(codon_changed)
-                codon_changed += 1 
+            try:
+                if rna_strand[current_codon] != mutated_rna_strand[current_codon]:
+                    codon_changed_list.append(codon_changed)
+                    codon_changed += 1 
+            except:
+                pass
                 if polypeptide_strand == mutated_polypeptide_strand:
                     hidden_mutation = True
                 else:
@@ -155,7 +159,7 @@ def getDNAToCovertToProteinStrand():
     printable_polypeptide_strand = ""
     for peptide in polypeptide_strand:
         printable_polypeptide_strand += peptide + " "
-    
+
     choice = input("Check Strand against its mutated version? Y/N: ")
     if "Y" in choice.upper():
         mutated_dna_strand , mutated_rna_strand , mutated_polypeptide_strand , changed_list , hidden_mutation = getMutatedDnaStrandAndCompare(dna_strand, rna_strand, polypeptide_strand)
@@ -188,5 +192,29 @@ def getDNAToCovertToProteinStrand():
     print(f"                  {change}")
     print(f" Protein Strand:  {str(printable_mutated_polypeptide_strand)}")
     print(f"                  {change}")
+    choice2 = input("Check for type of mutation? Y/N: ")
+    #print(changed_list)
+    if "Y" in choice2.upper():
+        if dna_strand == mutated_dna_strand:
+            print("No  Mutation!")
+        elif hidden_mutation:
+            print("Mutation type: Hidden/Point Mutation")
+        elif len(changed_list) == 1:
+            last_codon = mutated_rna_strand[-1]
+            if len(last_codon) == 1:
+                print("Mutation type: Insert Mutation")
+            else:
+                print("Mutation type: NonHidden/Point Mutation")
+        elif len(changed_list) > 1 and mutated_polypeptide_strand[-1] == "Error": # Deletion/Insertion
+            last_codon = mutated_rna_strand[-1]
+            if len(last_codon) == 1:
+                print("Mutation type: Insert Mutation")
+            elif len(last_codon) == 2:
+                print("Mutation type: Deletion Mutation")
+        else:
+            print(f'Mutation type is Codon Deletion')
+
+
+        
 #need to add another part where it checks if each codon is the same with mutated strand and if it changes the resulting protein 
 getDNAToCovertToProteinStrand()
